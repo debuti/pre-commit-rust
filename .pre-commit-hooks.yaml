@@ -1,22 +1,42 @@
 - id: fmt
   name: fmt
-  description: Format files with cargo fmt.
+  description: Format Rust sources.
   entry: cargo fmt
   language: system
   types: [rust]
   args: ["--"]
+  stages:
+    - pre-commit
+    - pre-merge-commit
+    - manual
+
 - id: cargo-check
   name: cargo check
   description: Check the package for errors.
-  entry: cargo check
+  entry: env CARGO_CHECK=1 cargo check
   language: system
-  types: [rust]
+  types: [file]
+  files: ^.*(Cargo\.toml|Cargo\.lock|.*\.rs)$
   pass_filenames: false
+  stages:
+    - pre-commit
+    - pre-merge-commit
+    - pre-push
+    - manual
+
 - id: clippy
   name: clippy
-  description: Lint rust sources
-  entry: cargo clippy
+  description: Lint Rust sources
+  entry: env CARGO_LINT=1 cargo clippy
   language: system
   args: ["--", "-D", "warnings"]
-  types: [rust]
+  types: [file]
+  files: ^.*(Cargo\.toml|Cargo\.lock|.*\.rs)$
   pass_filenames: false
+  stages:
+    - pre-commit
+    - pre-merge-commit
+    - pre-push
+    - manual
+
+
